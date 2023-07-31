@@ -28,9 +28,16 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.fragment.app.viewModels
+import com.example.core.data.Resource
+import com.example.core.domain.model.GithubUser
 import com.example.github_thread.R
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class HomeFragment : Fragment() {
+
+    private val homeViewModel: HomeViewModel by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -38,15 +45,51 @@ class HomeFragment : Fragment() {
     ): View {
         return ComposeView(requireContext()).apply {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
-            setContent {
-                HomeApp()
+            if(activity != null){
+                homeViewModel.getGithubUsers()
+                homeViewModel.githubUsers().observe(viewLifecycleOwner){githubUsers ->
+                    if(githubUsers != null){
+                        when(githubUsers){
+                            is Resource.Loading -> {
+                                setContent {
+                                    LoadingView()
+                                }
+                            }
+                            is Resource.Success -> {
+                                setContent {
+                                    HomeApp(githubUsers.data ?: listOf<GithubUser>())
+                                }
+                            }
+                            is Resource.Error -> {
+                                setContent {
+                                    LoadingView()
+                                }
+                            }
+                        }
+                    }
+
+                }
             }
         }
     }
 }
 
 @Composable
-fun HomeApp() {
+fun LoadingView(){
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .fillMaxHeight()
+            .background(
+                color = Color.Black
+            )
+    ){
+        CircularProgressIndicator()
+    }
+}
+
+@Composable
+fun HomeApp(users: List<GithubUser>) {
     Column(
         modifier = Modifier
             .background(
@@ -75,8 +118,8 @@ fun HomeApp() {
             item{
                 Spacer(modifier = Modifier.height(16.dp))
             }
-            items(20, key = null){
-                UserItemCard()
+            items(users.size, key = {it -> users[it].id}){
+                UserItemCard(users[it])
             }
         }
     }
@@ -84,7 +127,7 @@ fun HomeApp() {
 
 
 @Composable
-fun UserItemCard() {
+fun UserItemCard(user: GithubUser) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -105,12 +148,12 @@ fun UserItemCard() {
                     modifier = Modifier.height(48.dp)
                 ) {
                     Column {
-                        Text("yudha.haris", fontWeight = FontWeight(500), color = Color.White)
-                        Text("Yudha Haris Purnama", color = Color.Gray)
+                        Text(user.login, fontWeight = FontWeight(500), color = Color.White)
+                        Text(user.type, color = Color.Gray)
                     }
                 }
                 Spacer(modifier = Modifier.height(4.dp))
-                Text("999 followers", color = Color.White)
+                Text(user.htmlUrl, color = Color.White)
                 Spacer(modifier = Modifier.height(8.dp))
                 Divider(
                     color = Color.Gray,
@@ -163,11 +206,11 @@ fun SearchBar() {
     )
 }
 
-@Preview(showBackground = true)
-@Composable
-fun PreviewHomeFragment() {
-    MaterialTheme {
-        HomeApp()
-    }
-
-}
+//@Preview(showBackground = true)
+//@Composable
+//fun PreviewHomeFragment() {
+//    MaterialTheme {
+//        HomeApp()
+//    }
+//
+//}

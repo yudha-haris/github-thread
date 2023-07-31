@@ -8,6 +8,5 @@ import javax.inject.Inject
 
 class GithubUserInteractor @Inject constructor(private val githubUserRepository: GithubUserRepository) : GithubUserUseCase {
     override fun getAllGithubUsers(): Flow<Resource<List<GithubUser>>> = githubUserRepository.getAllGithubUsers()
-
     override fun getSearchGithubUsers(username: String): Flow<Resource<List<GithubUser>>> = githubUserRepository.searchGithubUsers(username)
 }

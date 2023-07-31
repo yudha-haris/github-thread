@@ -17,9 +17,8 @@ class RemoteDataSource @Inject constructor(private val apiService: ApiService) {
         return flow {
             try {
                val response = apiService.getUsers()
-               val dataArray = response.items
-                if(dataArray.isNotEmpty()){
-                    emit(ApiResponse.Success(response.items))
+                if(response.isNotEmpty()){
+                    emit(ApiResponse.Success(response))
                 } else {
                     emit(ApiResponse.Empty)
                 }
@@ -34,9 +33,8 @@ class RemoteDataSource @Inject constructor(private val apiService: ApiService) {
         return flow {
             try {
                 val response = apiService.searchUser(username)
-                val dataArray = response.items
-                if(dataArray.isNotEmpty()){
-                    emit(ApiResponse.Success(response.items))
+                if(response.isNotEmpty()){
+                    emit(ApiResponse.Success(response))
                 } else {
                     emit(ApiResponse.Empty)
                 }
