@@ -43,6 +43,8 @@ android {
 }
 
 dependencies {
+    // core
+    implementation project(":core")
 
     // compose
     implementation 'androidx.activity:activity-compose:1.7.2'
