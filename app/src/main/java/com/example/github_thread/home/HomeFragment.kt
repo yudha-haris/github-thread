@@ -5,7 +5,6 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -16,28 +15,35 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.fragment.app.viewModels
+import coil.compose.AsyncImage
 import com.example.core.data.Resource
 import com.example.core.domain.model.GithubUser
-import com.example.github_thread.R
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class HomeFragment : Fragment() {
 
     private val homeViewModel: HomeViewModel by viewModels()
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        if(activity != null){
+            homeViewModel.getGithubUsers()
+        }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -46,26 +52,9 @@ class HomeFragment : Fragment() {
         return ComposeView(requireContext()).apply {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             if(activity != null){
-                homeViewModel.getGithubUsers()
                 homeViewModel.githubUsers().observe(viewLifecycleOwner){githubUsers ->
-                    if(githubUsers != null){
-                        when(githubUsers){
-                            is Resource.Loading -> {
-                                setContent {
-                                    LoadingView()
-                                }
-                            }
-                            is Resource.Success -> {
-                                setContent {
-                                    HomeApp(githubUsers.data ?: listOf<GithubUser>())
-                                }
-                            }
-                            is Resource.Error -> {
-                                setContent {
-                                    LoadingView()
-                                }
-                            }
-                        }
+                    setContent {
+                        HomeApp(item = githubUsers)
                     }
 
                 }
@@ -82,14 +71,15 @@ fun LoadingView(){
             .fillMaxHeight()
             .background(
                 color = Color.Black
-            )
+            ),
+        contentAlignment = Alignment.Center
     ){
         CircularProgressIndicator()
     }
 }
 
 @Composable
-fun HomeApp(users: List<GithubUser>) {
+fun HomeApp(item: Resource<List<GithubUser>>) {
     Column(
         modifier = Modifier
             .background(
@@ -114,14 +104,26 @@ fun HomeApp(users: List<GithubUser>) {
             SearchBar()
         }
         Spacer(modifier = Modifier.height(4.dp))
-        LazyColumn(){
-            item{
-                Spacer(modifier = Modifier.height(16.dp))
+        when(item){
+            is Resource.Loading -> {
+                LoadingView()
             }
-            items(users.size, key = {it -> users[it].id}){
-                UserItemCard(users[it])
+            is Resource.Success -> {
+                val users = item.data ?: listOf()
+                LazyColumn(){
+                    item{
+                        Spacer(modifier = Modifier.height(16.dp))
+                    }
+                    items(users.size, key = {users[it].id}){
+                        UserItemCard(users[it])
+                    }
+                }
+            }
+            is Resource.Error -> {
+
             }
         }
+
     }
 }
 
@@ -135,8 +137,9 @@ fun UserItemCard(user: GithubUser) {
     ) {
         Row {
             Spacer(modifier = Modifier.width(16.dp))
-            Image(
-                painter = painterResource(id = R.drawable.ic_launcher_background),
+            AsyncImage(
+                model = user.avatarUrl,
+                contentScale = ContentScale.Crop,
                 contentDescription = "User Profile",
                 modifier = Modifier
                     .size(48.dp)
@@ -205,12 +208,3 @@ fun SearchBar() {
             .fillMaxWidth()
     )
 }
-
-//@Preview(showBackground = true)
-//@Composable
-//fun PreviewHomeFragment() {
-//    MaterialTheme {
-//        HomeApp()
-//    }
-//
-//}

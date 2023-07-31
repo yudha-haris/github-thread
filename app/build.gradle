@@ -57,6 +57,7 @@ dependencies {
     implementation "androidx.lifecycle:lifecycle-viewmodel-compose:2.6.1"
     implementation "androidx.compose.material:material:$compose_ui_version"
     debugImplementation "androidx.compose.ui:ui-tooling:$compose_ui_version"
+    implementation "io.coil-kt:coil-compose:2.2.0"
 
     // test
     testImplementation 'junit:junit:4.13.2'
