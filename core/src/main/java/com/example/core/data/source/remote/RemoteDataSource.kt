@@ -13,21 +13,6 @@ import javax.inject.Singleton
 
 @Singleton
 class RemoteDataSource @Inject constructor(private val apiService: ApiService) {
-    suspend fun getAllGithubUsers(): Flow<ApiResponse<List<GithubUserResponse>>> {
-        return flow {
-            try {
-               val response = apiService.getUsers()
-                if(response.isNotEmpty()){
-                    emit(ApiResponse.Success(response))
-                } else {
-                    emit(ApiResponse.Empty)
-                }
-            } catch (e :Exception){
-                emit(ApiResponse.Error(e.message.toString()))
-                Log.e("RemoteDataSource", e.toString())
-            }
-        }.flowOn(Dispatchers.IO)
-    }
 
     suspend fun searchGithubUsers(username: String): Flow<ApiResponse<List<GithubUserResponse>>> {
         return flow {

@@ -1,14 +1,15 @@
 package com.example.core.data.source.remote.network
 
 import com.example.core.data.source.remote.response.GithubUserResponse
-import com.example.core.data.source.remote.response.ListGithubUserResponse
-import retrofit2.http.GET
-import retrofit2.http.Path
-import retrofit2.http.Query
+import retrofit2.http.*
 
 interface ApiService {
     @GET("users")
-    suspend fun getUsers(): List<GithubUserResponse>
+    suspend fun getUsers(
+        @Header("Authorization") token: String,
+        @Query("since") since: Int,
+        @Query("per_page") perPage: Int,
+    ): List<GithubUserResponse>
 
     @GET("search/users")
     suspend fun searchUser(
