@@ -19,9 +19,8 @@ class GithubUserPagingSource @Inject constructor(private val apiService: ApiServ
 
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, GithubUser> {
         return try {
-            val header = "Token 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"
             val position = params.key ?: INITIAL_PAGE_INDEX
-            val responseData = apiService.getUsers(header, position, 10)
+            val responseData = apiService.getUsers(position, 10)
 
             LoadResult.Page(
                 data = DataMapper.mapResponseToDomain(responseData),

@@ -17,7 +17,7 @@ class RemoteDataSource @Inject constructor(private val apiService: ApiService) {
     suspend fun searchGithubUsers(username: String): Flow<ApiResponse<List<GithubUserResponse>>> {
         return flow {
             try {
-                val response = apiService.searchUser(username)
+                val response = apiService.searchUser(username = username).items
                 if(response.isNotEmpty()){
                     emit(ApiResponse.Success(response))
                 } else {
