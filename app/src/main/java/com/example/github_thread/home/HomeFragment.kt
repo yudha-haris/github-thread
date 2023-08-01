@@ -5,30 +5,19 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.BasicTextField
-import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Search
-import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Scaffold
+import androidx.compose.material.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.State
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.fragment.app.Fragment
@@ -36,7 +25,9 @@ import androidx.fragment.app.viewModels
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
-import coil.compose.AsyncImage
+import com.example.component.CircularLoading
+import com.example.component.SearchBar
+import com.example.component.UserItemCard
 import com.example.core.data.Resource
 import com.example.core.domain.model.GithubUser
 import com.example.github_thread.detail.GithubUserDetailActivity
@@ -201,118 +192,5 @@ fun UsersRecommendation(githubUsers: LazyPagingItems<GithubUser>, onItemTap: (St
         }
     }
 
-}
-
-@Composable
-fun UserItemCard(
-    user: GithubUser,
-    onTap: (String) -> Unit,
-) {
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 8.dp)
-            .clickable {
-                onTap(user.login)
-            }
-    ) {
-        Row {
-            Spacer(modifier = Modifier.width(16.dp))
-            AsyncImage(
-                model = user.avatarUrl,
-                contentScale = ContentScale.Crop,
-                contentDescription = "User Profile",
-                modifier = Modifier
-                    .size(48.dp)
-                    .clip(CircleShape)
-            )
-            Spacer(modifier = Modifier.width(16.dp))
-            Column {
-                Box(
-                    modifier = Modifier.height(48.dp)
-                ) {
-                    Column {
-                        Text(user.login, fontWeight = FontWeight(500), color = Color.White)
-                        Text(user.type, color = Color.Gray)
-                    }
-                }
-                Spacer(modifier = Modifier.height(4.dp))
-                Text(user.htmlUrl, color = Color.White)
-                Spacer(modifier = Modifier.height(8.dp))
-                Divider(
-                    color = Color.Gray,
-                    thickness = (0.6).dp,
-                )
-            }
-        }
-    }
-}
-
-@Composable
-fun SearchBar(
-    onValueChange: (String) -> Unit,
-    onKeyboardDone: (String) -> Unit,
-) {
-    var value by remember {
-        mutableStateOf("")
-    }
-    BasicTextField(
-        value = value,
-        onValueChange = { newValue ->
-            value = newValue
-            onValueChange(value)
-        },
-        keyboardOptions = KeyboardOptions(
-            imeAction = ImeAction.Done
-        ),
-        keyboardActions = KeyboardActions(
-            onDone = {
-                onKeyboardDone(value)
-            }
-        ),
-        textStyle = TextStyle(color = Color.White, fontSize = 16.sp),
-        cursorBrush = Brush.verticalGradient(colors = listOf(Color.White, Color.White)),
-        decorationBox = { innerTextField ->
-            Row(
-                modifier = Modifier
-                    .background(Color.Gray.copy(alpha = 0.4f), RoundedCornerShape(8.dp))
-                    .padding(vertical = 8.dp),
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Search,
-                    contentDescription = null,
-                    tint = Color.White,
-                    modifier = Modifier.padding(horizontal = 8.dp)
-                )
-                Box {
-                    if (value.isEmpty()) {
-                        Text(
-                            text = "Search",
-                            color = Color.LightGray,
-                        )
-                    }
-                    innerTextField()
-                }
-
-            }
-
-        },
-        modifier = Modifier
-            .fillMaxWidth()
-    )
-}
-
-@Composable
-fun CircularLoading() {
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 4.dp),
-        contentAlignment = Alignment.Center
-    ) {
-        CircularProgressIndicator(
-            modifier = Modifier.padding(vertical = 4.dp)
-        )
-    }
 }
 

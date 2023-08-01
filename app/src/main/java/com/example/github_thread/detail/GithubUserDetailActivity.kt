@@ -15,7 +15,6 @@ import androidx.compose.material.icons.filled.KeyboardArrowLeft
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
@@ -24,6 +23,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
+import com.example.component.CircularLoading
 import com.example.core.data.Resource
 import com.example.core.domain.model.GithubUser
 import com.example.core.domain.model.GithubUserRepo
@@ -198,19 +198,5 @@ fun UserRepos(
                 }
             }
         }
-    }
-}
-
-@Composable
-fun CircularLoading() {
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 4.dp),
-        contentAlignment = Alignment.Center
-    ) {
-        CircularProgressIndicator(
-            modifier = Modifier.padding(vertical = 4.dp)
-        )
     }
 }
