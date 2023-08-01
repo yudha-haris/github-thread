@@ -13,4 +13,7 @@ class GithubUserInteractor @Inject constructor(private val githubUserRepository:
     override fun getSearchGithubUsers(username: String): Flow<Resource<List<GithubUser>>> = githubUserRepository.searchGithubUsers(username)
     override fun getGithubUser(username: String): Flow<Resource<GithubUser>> = githubUserRepository.getGithubUser(username)
     override fun getGithubUserRepos(username: String): Flow<Resource<List<GithubUserRepo>>> = githubUserRepository.getGithubUserRepos(username)
+    override suspend fun setFavoriteGithubUser(githubUser: GithubUser, newState: Boolean) = githubUserRepository.setFavoriteGithubUser(githubUser, newState)
+
+    override fun getAllFavoriteGithubUser(): Flow<List<GithubUser>> = githubUserRepository.getFavoriteGithubUser()
 }

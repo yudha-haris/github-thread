@@ -97,7 +97,7 @@ object DataMapper {
         return githubUsersList
     }
 
-    fun mapResponseToDomain(input: GithubUserResponse) : GithubUser = GithubUser(
+    fun mapResponseToDomain(input: GithubUserResponse, isFavorite: Boolean = false) : GithubUser = GithubUser(
         id = input.id ?: 0,
         gistsUrl = input.gistsUrl ?: "",
         url = input.url ?: "",
@@ -115,7 +115,7 @@ object DataMapper {
         organizationsUrl = input.organizationsUrl ?: "",
         type = input.type ?: "",
         siteAdmin = input.siteAdmin ?: false,
-        isFavorite = false,
+        isFavorite = isFavorite,
         htmlUrl = input.htmlUrl ?: "",
         name = input.name ?: ""
     )

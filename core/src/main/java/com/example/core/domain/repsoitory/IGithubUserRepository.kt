@@ -10,7 +10,7 @@ interface IGithubUserRepository {
     fun getAllGithubUsers(): Flow<PagingData<GithubUser>>
     fun searchGithubUsers(username: String): Flow<Resource<List<GithubUser>>>
     fun getFavoriteGithubUser(): Flow<List<GithubUser>>
-    fun setFavoriteGithubUser(githubUser: GithubUser, state: Boolean)
+    suspend fun setFavoriteGithubUser(githubUser: GithubUser, state: Boolean)
     fun getGithubUser(username: String): Flow<Resource<GithubUser>>
     fun getGithubUserRepos(username: String): Flow<Resource<List<GithubUserRepo>>>
 }

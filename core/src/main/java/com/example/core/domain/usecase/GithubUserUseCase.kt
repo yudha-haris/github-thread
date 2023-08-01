@@ -10,6 +10,7 @@ interface GithubUserUseCase {
     fun getAllGithubUsers(): Flow<PagingData<GithubUser>>
     fun getSearchGithubUsers(username: String): Flow<Resource<List<GithubUser>>>
     fun getGithubUser(username: String): Flow<Resource<GithubUser>>
-
     fun getGithubUserRepos(username: String): Flow<Resource<List<GithubUserRepo>>>
+    suspend fun setFavoriteGithubUser(githubUser: GithubUser, newState: Boolean)
+    fun getAllFavoriteGithubUser(): Flow<List<GithubUser>>
 }
