@@ -22,6 +22,16 @@ dependencies {
     //paging
     implementation "androidx.paging:paging-runtime-ktx:3.2.0"
     implementation "androidx.paging:paging-compose:3.2.0"
-//    kapt "androidx.hilt:hilt-compiler:$hilt_jetpack_version"
-//    kaptAndroidTest "androidx.hilt:hilt-compiler:$hilt_jetpack_version"
+
+    // compose
+    implementation 'androidx.activity:activity-compose:1.7.2'
+    implementation "androidx.compose.ui:ui:$compose_ui_version"
+    implementation "androidx.compose.ui:ui-tooling-preview:$compose_ui_version"
+    implementation "androidx.lifecycle:lifecycle-viewmodel-compose:2.6.1"
+    implementation "androidx.compose.material:material:$compose_ui_version"
+    implementation 'androidx.appcompat:appcompat:1.6.1'
+    implementation 'com.google.android.material:material:1.9.0'
+    implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
+    debugImplementation "androidx.compose.ui:ui-tooling:$compose_ui_version"
+    implementation "io.coil-kt:coil-compose:2.2.0"
 }

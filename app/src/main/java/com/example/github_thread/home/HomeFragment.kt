@@ -1,32 +1,23 @@
 package com.example.github_thread.home
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.BasicTextField
-import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Search
-import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Scaffold
+import androidx.compose.material.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.State
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.fragment.app.Fragment
@@ -34,9 +25,12 @@ import androidx.fragment.app.viewModels
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
-import coil.compose.AsyncImage
+import com.example.component.CircularLoading
+import com.example.component.SearchBar
+import com.example.component.UserItemCard
 import com.example.core.data.Resource
 import com.example.core.domain.model.GithubUser
+import com.example.github_thread.detail.GithubUserDetailActivity
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -52,9 +46,21 @@ class HomeFragment : Fragment() {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             if (activity != null) {
                 val users = homeViewModel.githubUsers
+                val searchedUsers = homeViewModel.searchResults
                 setContent {
                     HomeApp(
                         githubUsers = users.collectAsLazyPagingItems(),
+                        searchedUsers = searchedUsers.collectAsState(),
+                        onItemTap = {
+                            onItemTap(it)
+                        },
+                        onValueChange = {
+                            onTextFieldChange(it)
+                        },
+                        onKeyboardDone = {
+                            onKeyboardDone(it)
+                        }
+
                     )
                 }
 
@@ -62,209 +68,129 @@ class HomeFragment : Fragment() {
         }
     }
 
-    @Composable
-    fun HomeApp(githubUsers: LazyPagingItems<GithubUser>) {
-        MaterialTheme {
-            Scaffold(
-                backgroundColor = Color.Black,
-                topBar = {
-                    Column {
-                        Spacer(modifier = Modifier.height(24.dp))
-                        Text(
-                            "Github User",
-                            fontSize = 32.sp,
-                            color = Color.White,
-                            fontWeight = FontWeight(800),
-                            modifier = Modifier.padding(horizontal = 8.dp)
-                        )
-                        Spacer(modifier = Modifier.height(16.dp))
-                        Box(
-                            modifier = Modifier.padding(
-                                horizontal = 8.dp,
-                            )
-                        ) {
-                            SearchBar()
-                        }
-                        Spacer(modifier = Modifier.height(4.dp))
-                    }
-                }
-            ) { innerPadding ->
-                homeViewModel.searchResults.collectAsState(initial = Resource.Error("init")).value.let {
-                    when(it){
-                        is Resource.Success -> {
-                            UsersSearchResult(
-                                it.data ?: listOf(),
-                                modifier = Modifier.padding(innerPadding)
-                            )
-                        }
-                        is Resource.Loading -> {
-                            CircularLoading()
-                        }
-                        else -> {
-                            UsersRecommendation(githubUsers, modifier = Modifier.padding(innerPadding))
-                        }
-                    }
-                }
-            }
-        }
-
+    private fun onItemTap(username: String){
+        val intent = Intent(activity, GithubUserDetailActivity::class.java)
+        intent.putExtra(GithubUserDetailActivity.EXTRA_USERNAME, username)
+        startActivity(intent)
     }
 
-    @Composable
-    fun UsersSearchResult(githubUsers: List<GithubUser>, modifier: Modifier) {
-        LazyColumn(
-            modifier = modifier
-        ) {
-            item {
-                Spacer(modifier = Modifier.height(16.dp))
-            }
-            items(githubUsers.size) { idx ->
-                UserItemCard(user = githubUsers[idx])
-            }
+    private fun onTextFieldChange(value: String){
+        if(value.isEmpty()){
+            homeViewModel.clearSearch()
         }
     }
 
-    @Composable
-    fun UsersRecommendation(githubUsers: LazyPagingItems<GithubUser>, modifier: Modifier) {
-        when (githubUsers.loadState.refresh) {
-            is LoadState.Loading -> {
-                CircularLoading()
-            }
-            else -> {}
-        }
-        LazyColumn(
-            modifier = modifier
-        ) {
-            item {
-                Spacer(modifier = Modifier.height(16.dp))
-            }
-            items(githubUsers.itemCount) { idx ->
-                githubUsers[idx]?.let { user -> UserItemCard(user) }
-            }
-            when (githubUsers.loadState.append) {
-                is LoadState.Loading -> {
-                   item {
-                       CircularLoading()
-                   }
+    private fun onKeyboardDone(value: String){
+        homeViewModel.searchUsers(value).observe(viewLifecycleOwner) { data ->
+            when (data) {
+                is Resource.Success -> {
+                    homeViewModel.inputResult(data.data ?: listOf())
                 }
                 else -> {}
             }
+
         }
-
     }
+}
 
-    @Composable
-    fun UserItemCard(user: GithubUser) {
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 8.dp)
+@Composable
+fun HomeApp(
+        githubUsers: LazyPagingItems<GithubUser>,
+        searchedUsers: State<Resource<List<GithubUser>>>,
+        onItemTap: (String) -> Unit,
+        onValueChange: (String) -> Unit,
+        onKeyboardDone: (String) -> Unit,
         ) {
-            Row {
-                Spacer(modifier = Modifier.width(16.dp))
-                AsyncImage(
-                    model = user.avatarUrl,
-                    contentScale = ContentScale.Crop,
-                    contentDescription = "User Profile",
-                    modifier = Modifier
-                        .size(48.dp)
-                        .clip(CircleShape)
-                )
-                Spacer(modifier = Modifier.width(16.dp))
+    MaterialTheme {
+        Scaffold(
+            backgroundColor = Color.Black,
+            topBar = {
                 Column {
+                    Spacer(modifier = Modifier.height(24.dp))
+                    Text(
+                        "Github User",
+                        fontSize = 32.sp,
+                        color = Color.White,
+                        fontWeight = FontWeight(800),
+                        modifier = Modifier.padding(horizontal = 8.dp)
+                    )
+                    Spacer(modifier = Modifier.height(16.dp))
                     Box(
-                        modifier = Modifier.height(48.dp)
+                        modifier = Modifier.padding(
+                            horizontal = 8.dp,
+                        )
                     ) {
-                        Column {
-                            Text(user.login, fontWeight = FontWeight(500), color = Color.White)
-                            Text(user.type, color = Color.Gray)
-                        }
+                        SearchBar(
+                            onValueChange,
+                            onKeyboardDone,
+                        )
                     }
                     Spacer(modifier = Modifier.height(4.dp))
-                    Text(user.htmlUrl, color = Color.White)
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Divider(
-                        color = Color.Gray,
-                        thickness = (0.6).dp,
-                    )
+                }
+            }
+        ) { innerPadding ->
+            searchedUsers.value.let {
+                when(it){
+                    is Resource.Success -> {
+                        UsersSearchResult(
+                            it.data ?: listOf(),
+                            onItemTap,
+                            modifier = Modifier.padding(innerPadding)
+                        )
+                    }
+                    is Resource.Loading -> {
+                        CircularLoading()
+                    }
+                    else -> {
+                        UsersRecommendation(githubUsers, onItemTap, modifier = Modifier.padding(innerPadding))
+                    }
                 }
             }
         }
     }
 
-    @Composable
-    fun SearchBar() {
-        var value by remember {
-            mutableStateOf("")
+}
+
+@Composable
+fun UsersSearchResult(githubUsers: List<GithubUser>, onItemTap: (String) -> Unit, modifier: Modifier) {
+    LazyColumn(
+        modifier = modifier
+    ) {
+        item {
+            Spacer(modifier = Modifier.height(16.dp))
         }
-        BasicTextField(
-            value = value,
-            onValueChange = { newValue ->
-                value = newValue
-                if(value.isEmpty()){
-                    homeViewModel.clearSearch()
-                }
-            },
-            keyboardOptions = KeyboardOptions(
-                imeAction = ImeAction.Done
-            ),
-            keyboardActions = KeyboardActions(
-                onDone = {
-                    homeViewModel.searchUsers(value).observe(viewLifecycleOwner) { data ->
-                        when (data) {
-                            is Resource.Success -> {
-                                homeViewModel.inputResult(data.data ?: listOf())
-                            }
-                            else -> {}
-                        }
-
-                    }
-                }
-            ),
-            textStyle = TextStyle(color = Color.White, fontSize = 16.sp),
-            cursorBrush = Brush.verticalGradient(colors = listOf(Color.White, Color.White)),
-            decorationBox = { innerTextField ->
-                Row(
-                    modifier = Modifier
-                        .background(Color.Gray.copy(alpha = 0.4f), RoundedCornerShape(8.dp))
-                        .padding(vertical = 8.dp),
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Search,
-                        contentDescription = null,
-                        tint = Color.White,
-                        modifier = Modifier.padding(horizontal = 8.dp)
-                    )
-                    Box {
-                        if (value.isEmpty()) {
-                            Text(
-                                text = "Search",
-                                color = Color.LightGray,
-                            )
-                        }
-                        innerTextField()
-                    }
-
-                }
-
-            },
-            modifier = Modifier
-                .fillMaxWidth()
-        )
-    }
-
-    @Composable
-    fun CircularLoading() {
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 4.dp),
-            contentAlignment = Alignment.Center
-        ) {
-            CircularProgressIndicator(
-                modifier = Modifier.padding(vertical = 4.dp)
-            )
+        items(githubUsers.size) { idx ->
+            UserItemCard(user = githubUsers[idx], onItemTap)
         }
     }
+}
+
+@Composable
+fun UsersRecommendation(githubUsers: LazyPagingItems<GithubUser>, onItemTap: (String) -> Unit, modifier: Modifier) {
+    when (githubUsers.loadState.refresh) {
+        is LoadState.Loading -> {
+            CircularLoading()
+        }
+        else -> {}
+    }
+    LazyColumn(
+        modifier = modifier
+    ) {
+        item {
+            Spacer(modifier = Modifier.height(16.dp))
+        }
+        items(githubUsers.itemCount) { idx ->
+            githubUsers[idx]?.let { user -> UserItemCard(user,onItemTap) }
+        }
+        when (githubUsers.loadState.append) {
+            is LoadState.Loading -> {
+                item {
+                    CircularLoading()
+                }
+            }
+            else -> {}
+        }
+    }
+
 }
 

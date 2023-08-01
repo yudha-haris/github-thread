@@ -3,6 +3,7 @@ package com.example.core.data.source.remote
 import android.util.Log
 import com.example.core.data.source.remote.network.ApiResponse
 import com.example.core.data.source.remote.network.ApiService
+import com.example.core.data.source.remote.response.GithubUserReposResponse
 import com.example.core.data.source.remote.response.GithubUserResponse
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -42,10 +43,10 @@ class RemoteDataSource @Inject constructor(private val apiService: ApiService) {
         }.flowOn(Dispatchers.IO)
     }
 
-    suspend fun getGithubUserFollowers(username: String): Flow<ApiResponse<List<GithubUserResponse>>> {
+    suspend fun getGithubUserRepos(username: String): Flow<ApiResponse<List<GithubUserReposResponse>>> {
         return flow {
             try {
-                val response = apiService.getFollowers(username)
+                val response = apiService.getRepos(username)
                 if(response.isNotEmpty()){
                     emit(ApiResponse.Success(response))
                 } else {
