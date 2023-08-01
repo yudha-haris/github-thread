@@ -55,5 +55,8 @@ data class GithubUserResponse(
     val nodeId: String? = null,
 
     @field:SerializedName("organizations_url")
-    val organizationsUrl: String? = null
+    val organizationsUrl: String? = null,
+
+    @field:SerializedName("name")
+    val name: String? = null
 )

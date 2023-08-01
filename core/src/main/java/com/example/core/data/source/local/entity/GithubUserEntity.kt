@@ -68,5 +68,8 @@ data class GithubUserEntity (
     val organizationsUrl: String? = null,
 
     @ColumnInfo(name = "isFavorite")
-    var isFavorite: Boolean = false
+    var isFavorite: Boolean = false,
+
+    @ColumnInfo(name = "name")
+    var name: String? = null,
 ) : Parcelable

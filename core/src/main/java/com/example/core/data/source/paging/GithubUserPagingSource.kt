@@ -23,7 +23,7 @@ class GithubUserPagingSource @Inject constructor(private val apiService: ApiServ
             val responseData = apiService.getUsers(position, 10)
 
             LoadResult.Page(
-                data = DataMapper.mapResponseToDomain(responseData),
+                data = DataMapper.mapResponseToDomains(responseData),
                 prevKey = if (position == 1) null else position - 1,
                 nextKey = if (responseData.isEmpty()) null else position + 1
             )

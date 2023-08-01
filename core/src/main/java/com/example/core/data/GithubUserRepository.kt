@@ -8,6 +8,7 @@ import com.example.core.data.source.paging.GithubUserPagingSource
 import com.example.core.data.source.remote.RemoteDataSource
 import com.example.core.data.source.remote.network.ApiResponse
 import com.example.core.domain.model.GithubUser
+import com.example.core.domain.model.GithubUserRepo
 import com.example.core.domain.repsoitory.IGithubUserRepository
 import com.example.core.utils.AppExecutors
 import com.example.core.utils.DataMapper
@@ -35,7 +36,7 @@ class GithubUserRepository @Inject constructor(
         val response = remoteDataSource.searchGithubUsers(username)
         when (val apiResponse = response.first()) {
             is ApiResponse.Success -> {
-                emit(Resource.Success(DataMapper.mapResponseToDomain(apiResponse.data)))
+                emit(Resource.Success(DataMapper.mapResponseToDomains(apiResponse.data)))
             }
             is ApiResponse.Empty -> {
                 emit(Resource.Error("empty respone"))
@@ -56,6 +57,38 @@ class GithubUserRepository @Inject constructor(
         val githubUserEntity = DataMapper.mapDomainToEntity(githubUser)
         appExecutors.diskIO().execute {
             localDataSource.setFavoriteGithubUser(githubUserEntity, state)
+        }
+    }
+
+    override fun getGithubUser(username: String): Flow<Resource<GithubUser>> = flow {
+        emit(Resource.Loading())
+        val response = remoteDataSource.getGithubUser(username)
+        when(val apiResponse = response.first()) {
+            is ApiResponse.Success -> {
+                emit(Resource.Success(DataMapper.mapResponseToDomain(apiResponse.data)))
+            }
+            is ApiResponse.Empty -> {
+                emit(Resource.Error("empty respone"))
+            }
+            is ApiResponse.Error -> {
+                emit(Resource.Error(apiResponse.errorMessage))
+            }
+        }
+    }
+
+    override fun getGithubUserRepos(username: String): Flow<Resource<List<GithubUserRepo>>> = flow {
+        emit(Resource.Loading())
+        val response = remoteDataSource.getGithubUserRepos(username)
+        when (val apiResponse = response.first()) {
+            is ApiResponse.Success -> {
+                emit(Resource.Success(DataMapper.mapReposResponseToDomains(apiResponse.data)))
+            }
+            is ApiResponse.Empty -> {
+                emit(Resource.Error("empty respone"))
+            }
+            is ApiResponse.Error -> {
+                emit(Resource.Error(apiResponse.errorMessage))
+            }
         }
     }
 }

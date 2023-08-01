@@ -1,7 +1,7 @@
 package com.example.core.domain.model
 
 import android.os.Parcelable
-import kotlinx.android.parcel.Parcelize
+import kotlinx.parcelize.Parcelize
 
 @Parcelize
 class GithubUser(
@@ -24,4 +24,5 @@ class GithubUser(
     val nodeId: String,
     val organizationsUrl: String,
     val isFavorite: Boolean,
+    val name: String,
 ) : Parcelable
