@@ -164,6 +164,7 @@ class HomeFragment : Fragment() {
                 .padding(vertical = 8.dp)
                 .clickable {
                     val intent = Intent(activity, GithubUserDetailActivity::class.java)
+                    intent.putExtra(GithubUserDetailActivity.EXTRA_USERNAME, user.login)
                     startActivity(intent)
                 }
         ) {
