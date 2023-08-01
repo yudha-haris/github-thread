@@ -53,19 +53,19 @@ class GithubUserRepository @Inject constructor(
         }
     }
 
-    override fun setFavoriteGithubUser(githubUser: GithubUser, state: Boolean) {
+    override suspend fun setFavoriteGithubUser(githubUser: GithubUser, state: Boolean) {
         val githubUserEntity = DataMapper.mapDomainToEntity(githubUser)
-        appExecutors.diskIO().execute {
-            localDataSource.setFavoriteGithubUser(githubUserEntity, state)
-        }
+        localDataSource.setFavoriteGithubUser(githubUserEntity, state)
     }
 
     override fun getGithubUser(username: String): Flow<Resource<GithubUser>> = flow {
         emit(Resource.Loading())
         val response = remoteDataSource.getGithubUser(username)
+        val favorite = localDataSource.checkFavoriteGithubUser(username)
+        val isFavorite = favorite.first().isNotEmpty()
         when(val apiResponse = response.first()) {
             is ApiResponse.Success -> {
-                emit(Resource.Success(DataMapper.mapResponseToDomain(apiResponse.data)))
+                emit(Resource.Success(DataMapper.mapResponseToDomain(apiResponse.data, isFavorite)))
             }
             is ApiResponse.Empty -> {
                 emit(Resource.Error("empty respone"))

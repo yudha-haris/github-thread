@@ -16,3 +16,4 @@ rootProject.name = "github-thread"
 include ':app'
 include ':core'
 include ':component'
+include ':favorite'
