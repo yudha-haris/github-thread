@@ -107,51 +107,6 @@ class HomeFragment : Fragment() {
     }
 }
 
-@Preview
-@Composable
-fun PreviewTopBar(){
-    Scaffold(
-        backgroundColor = Color.Black
-    ) {
-        Column {
-            Spacer(modifier = Modifier
-                .height(24.dp)
-                .padding(it))
-            Row (
-                horizontalArrangement = Arrangement.SpaceBetween,
-                modifier = Modifier.fillMaxWidth()
-                    ){
-                Text(
-                    "Github User",
-                    fontSize = 32.sp,
-                    color = Color.White,
-                    fontWeight = FontWeight(800),
-                    modifier = Modifier.padding(horizontal = 8.dp)
-                )
-                Icon(
-                    imageVector = Icons.Default.Favorite,
-                    contentDescription = "Favorite Button",
-                    tint = Color.White,
-                    modifier = Modifier.padding(end = 8.dp, top = 8.dp)
-                )
-            }
-            Spacer(modifier = Modifier.height(16.dp))
-            Box(
-                modifier = Modifier.padding(
-                    horizontal = 8.dp,
-                )
-            ) {
-                SearchBar(
-                    onValueChange = {},
-                    onKeyboardDone = {},
-                )
-            }
-            Spacer(modifier = Modifier.height(4.dp))
-        }
-    }
-
-}
-
 @Composable
 fun HomeApp(
         githubUsers: LazyPagingItems<GithubUser>,

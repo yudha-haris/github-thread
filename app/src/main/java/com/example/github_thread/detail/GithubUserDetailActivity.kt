@@ -5,6 +5,7 @@ import android.view.Window
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -12,9 +13,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowLeft
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.State
-import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
@@ -49,7 +48,12 @@ class GithubUserDetailActivity : AppCompatActivity() {
                     .collectAsState(initial = Resource.Loading())
                 val repos = viewModel.githubUserRepo(username)
                     .collectAsState(initial = Resource.Loading())
-                DetailScreen(user, repos, onBackButton = {finish()})
+                DetailScreen(user, repos,
+                    onBackButton = { finish() },
+                    onFavorite = { it, isFavorite ->
+                        viewModel.setFavoriteUser(it, isFavorite)
+                    }
+                )
             }
         }
     }
@@ -63,7 +67,8 @@ class GithubUserDetailActivity : AppCompatActivity() {
 fun DetailScreen(
     user: State<Resource<GithubUser>>,
     repos: State<Resource<List<GithubUserRepo>>>,
-    onBackButton: () -> Unit
+    onBackButton: () -> Unit,
+    onFavorite: (GithubUser, Boolean) -> Unit,
 ) {
     MaterialTheme {
         Scaffold(
@@ -92,7 +97,7 @@ fun DetailScreen(
                                 CircularLoading()
                             }
                             is Resource.Success -> {
-                                ProfileCard(user = it.data!!)
+                                ProfileCard(user = it.data!!, onFavorite)
                             }
                             is Resource.Error -> {}
                         }
@@ -120,7 +125,8 @@ fun DetailScreen(
 }
 
 @Composable
-fun ProfileCard(user: GithubUser) {
+fun ProfileCard(user: GithubUser, onFavorite: (GithubUser, Boolean) -> Unit) {
+    var isFavorite by remember { mutableStateOf(user.isFavorite) }
     Column {
         Row(
             modifier = Modifier
@@ -147,16 +153,26 @@ fun ProfileCard(user: GithubUser) {
             )
         }
         Button(
-            onClick = { /*TODO*/ },
+            onClick = {
+                onFavorite(user, !isFavorite)
+                isFavorite = !isFavorite
+            },
             colors = ButtonDefaults.buttonColors(
-                backgroundColor = Color.White
+                backgroundColor = if (isFavorite) Color.Black else Color.White,
+            ),
+            border = BorderStroke(
+                width = 0.5.dp,
+                color = Color.White
             ),
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(16.dp)
         ) {
-            Text("Add to Favorite", fontWeight = FontWeight(600))
-
+            if (isFavorite) {
+                Text("Remove from Favorite", fontWeight = FontWeight(600), color = Color.White)
+            } else {
+                Text("Add to Favorite", fontWeight = FontWeight(600))
+            }
         }
     }
 }

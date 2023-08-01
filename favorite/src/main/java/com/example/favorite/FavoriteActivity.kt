@@ -18,7 +18,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.component.SearchBar
 import com.example.component.UserItemCard
 import com.example.core.domain.model.GithubUser
 import com.example.github_thread.R
@@ -54,9 +53,7 @@ class FavoriteActivity : AppCompatActivity() {
             val users = viewModel.favoriteUsers
             FavoriteScreen(
                 users = users.collectAsState(initial = listOf()),
-                onItemTap = {},
-                onValueChange = {},
-                onKeyboardDone = {})
+                onItemTap = {})
         }
     }
 }
@@ -64,9 +61,7 @@ class FavoriteActivity : AppCompatActivity() {
 @Composable
 fun FavoriteScreen(
     users: State<List<GithubUser>>,
-    onItemTap: (String) -> Unit,
-    onValueChange: (String) -> Unit,
-    onKeyboardDone: (String) -> Unit,
+    onItemTap: (String) -> Unit
 ){
     MaterialTheme {
         Scaffold(
@@ -82,17 +77,6 @@ fun FavoriteScreen(
                         modifier = Modifier.padding(horizontal = 8.dp)
                     )
                     Spacer(modifier = Modifier.height(16.dp))
-                    Box(
-                        modifier = Modifier.padding(
-                            horizontal = 8.dp,
-                        )
-                    ) {
-                        SearchBar(
-                            onValueChange,
-                            onKeyboardDone,
-                        )
-                    }
-                    Spacer(modifier = Modifier.height(4.dp))
                 }
             }
         ) { innerPadding ->
