@@ -1,10 +1,12 @@
 package com.example.github_thread.home
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
@@ -37,6 +39,7 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import coil.compose.AsyncImage
 import com.example.core.data.Resource
 import com.example.core.domain.model.GithubUser
+import com.example.github_thread.detail.GithubUserDetailActivity
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -159,6 +162,10 @@ class HomeFragment : Fragment() {
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(vertical = 8.dp)
+                .clickable {
+                    val intent = Intent(activity, GithubUserDetailActivity::class.java)
+                    startActivity(intent)
+                }
         ) {
             Row {
                 Spacer(modifier = Modifier.width(16.dp))

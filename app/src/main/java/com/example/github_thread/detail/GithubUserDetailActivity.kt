@@ -1,6 +1,8 @@
 package com.example.github_thread.detail
 
 import android.os.Bundle
+import android.view.Window
+import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -24,7 +26,14 @@ import com.example.github_thread.R
 class GithubUserDetailActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_github_user_detail)
+
+        supportActionBar?.hide()
+        val window: Window = window
+        window.statusBarColor = getColor(R.color.black)
+
+        setContent {
+            DetailScreen()
+        }
     }
 
     @Preview
