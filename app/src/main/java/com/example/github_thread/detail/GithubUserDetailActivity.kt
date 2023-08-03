@@ -22,7 +22,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
-import com.example.component.CircularLoading
+import com.example.component.ShimmerCard
+import com.example.component.ShimmerList
 import com.example.core.data.Resource
 import com.example.core.domain.model.GithubUser
 import com.example.core.domain.model.GithubUserRepo
@@ -94,7 +95,7 @@ fun DetailScreen(
                     user.value.let {
                         when (it) {
                             is Resource.Loading -> {
-                                CircularLoading()
+                                ShimmerCard()
                             }
                             is Resource.Success -> {
                                 ProfileCard(user = it.data!!, onFavorite)
@@ -108,7 +109,7 @@ fun DetailScreen(
             repos.value.let {
                 when (it) {
                     is Resource.Loading -> {
-                        CircularLoading()
+                        ShimmerList()
                     }
                     is Resource.Success -> {
                         UserRepos(

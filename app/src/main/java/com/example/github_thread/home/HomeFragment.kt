@@ -23,7 +23,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.fragment.app.Fragment
@@ -32,6 +31,7 @@ import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.example.component.CircularLoading
+import com.example.component.EmptySearchPlaceholder
 import com.example.component.SearchBar
 import com.example.component.UserItemCard
 import com.example.core.data.Resource
@@ -137,9 +137,11 @@ fun HomeApp(
                             imageVector = Icons.Default.Favorite,
                             contentDescription = "Favorite Button",
                             tint = Color.White,
-                            modifier = Modifier.padding(end = 8.dp, top = 8.dp).clickable {
-                                onFavoriteTap()
-                            }
+                            modifier = Modifier
+                                .padding(end = 8.dp, top = 8.dp)
+                                .clickable {
+                                    onFavoriteTap()
+                                }
                         )
                     }
                     Spacer(modifier = Modifier.height(16.dp))
@@ -181,14 +183,18 @@ fun HomeApp(
 
 @Composable
 fun UsersSearchResult(githubUsers: List<GithubUser>, onItemTap: (String) -> Unit, modifier: Modifier) {
-    LazyColumn(
-        modifier = modifier
-    ) {
-        item {
-            Spacer(modifier = Modifier.height(16.dp))
-        }
-        items(githubUsers.size) { idx ->
-            UserItemCard(user = githubUsers[idx], onItemTap)
+    if(githubUsers.isEmpty()){
+        EmptySearchPlaceholder()
+    } else {
+        LazyColumn(
+            modifier = modifier
+        ) {
+            item {
+                Spacer(modifier = Modifier.height(16.dp))
+            }
+            items(githubUsers.size) { idx ->
+                UserItemCard(user = githubUsers[idx], onItemTap)
+            }
         }
     }
 }

@@ -31,10 +31,4 @@ interface ApiService {
     suspend fun getRepos(
         @Path("username") username: String
     ): List<GithubUserReposResponse>
-
-    @GET("users/{username}/following")
-    @Headers("Authorization: ${BuildConfig.GITHUB_TOKEN}")
-    suspend fun getFollowing(
-        @Path("username") username: String
-    ): List<GithubUserResponse>
 }
