@@ -17,17 +17,20 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 class DatabaseModule {
 
-    val passphrase: ByteArray = SQLiteDatabase.getBytes("github".toCharArray())
-    val factory = SupportFactory(passphrase)
+
 
     @Singleton
     @Provides
-    fun provideDatabase(@ApplicationContext context: Context): GithubUserDatabase = Room.databaseBuilder(
-        context,
-        GithubUserDatabase::class.java, "GithubUser.db"
-    ).fallbackToDestructiveMigration()
-        .openHelperFactory(factory)
-        .build()
+    fun provideDatabase(@ApplicationContext context: Context): GithubUserDatabase {
+        val passphrase: ByteArray = SQLiteDatabase.getBytes("github".toCharArray())
+        val factory = SupportFactory(passphrase)
+        return Room.databaseBuilder(
+            context,
+            GithubUserDatabase::class.java, "GithubUser.db"
+        ).fallbackToDestructiveMigration()
+            .openHelperFactory(factory)
+            .build()
+    }
 
     @Provides
     fun provideGithubUserDao(database: GithubUserDatabase): GithubUserDao = database.githubUserDao()
