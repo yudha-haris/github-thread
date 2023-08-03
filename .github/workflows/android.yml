@@ -21,3 +21,19 @@ jobs:
 
       - name: Unit tests
         run: ./gradlew test
+  build:
+    name: Build Android App
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v1
+      - name: set up JDK
+        uses: actions/setup-java@v1
+        with:
+          java-version: 17
+
+      - name: Change wrapper permissions
+        run: chmod +x ./gradlew
+
+      - name: Build Android App
+        run: ./gradlew assembleDebug
