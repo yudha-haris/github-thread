@@ -59,19 +59,4 @@ class RemoteDataSource @Inject constructor(private val apiService: ApiService) {
         }.flowOn(Dispatchers.IO)
     }
 
-    suspend fun getGithubUserFollowing(username: String): Flow<ApiResponse<List<GithubUserResponse>>> {
-        return flow {
-            try {
-                val response = apiService.getFollowing(username)
-                if(response.isNotEmpty()){
-                    emit(ApiResponse.Success(response))
-                } else {
-                    emit(ApiResponse.Empty)
-                }
-            } catch (e :Exception){
-                emit(ApiResponse.Error(e.message.toString()))
-                Log.e("RemoteDataSource", e.toString())
-            }
-        }.flowOn(Dispatchers.IO)
-    }
 }

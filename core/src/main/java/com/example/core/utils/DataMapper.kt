@@ -7,41 +7,12 @@ import com.example.core.domain.model.GithubUser
 import com.example.core.domain.model.GithubUserRepo
 
 object DataMapper {
-    fun mapResponseToEntities(input: List<GithubUserResponse>) : List<GithubUserEntity>{
-        val githubUsersList = ArrayList<GithubUserEntity>()
-        input.map {
-            val githubUser = GithubUserEntity(
-                id = it.id ?: 0,
-                gistsUrl = it.gistsUrl,
-                url = it.url,
-                avatarUrl = it.avatarUrl,
-                eventsUrl = it.eventsUrl,
-                receivedEventsUrl = it.receivedEventsUrl,
-                reposUrl = it.reposUrl,
-                starredUrl = it.starredUrl,
-                login = it.login,
-                nodeId = it.nodeId,
-                gravatarId = it.gravatarId,
-                followersUrl = it.followersUrl,
-                followingUrl = it.followingUrl,
-                subscriptionsUrl = it.subscriptionsUrl,
-                organizationsUrl = it.organizationsUrl,
-                type = it.type,
-                siteAdmin = it.siteAdmin,
-                isFavorite = false,
-                htmlUrl = it.htmlUrl,
-                name = it.name,
-            )
-            githubUsersList.add(githubUser)
-        }
-        return githubUsersList
-    }
 
     fun mapEntitiesToDomain(input: List<GithubUserEntity>) : List<GithubUser>{
         val githubUsersList = ArrayList<GithubUser>()
         input.map {
             val githubUser = GithubUser(
-                id = it.id ?: 0,
+                id = it.id,
                 gistsUrl = it.gistsUrl ?: "",
                 url = it.url ?: "",
                 avatarUrl = it.avatarUrl ?: "",
@@ -121,7 +92,7 @@ object DataMapper {
     )
 
     fun mapDomainToEntity(input: GithubUser) : GithubUserEntity = GithubUserEntity(
-        id = input.id ?: 0,
+        id = input.id,
         gistsUrl = input.gistsUrl,
         url = input.url,
         avatarUrl = input.avatarUrl,
@@ -147,13 +118,10 @@ object DataMapper {
         val repos = ArrayList<GithubUserRepo>()
         input.map {
             val repo = GithubUserRepo(
+                language = it.language ?: "",
                 id = it.id ?: 0,
                 name = it.name ?: "",
                 description = it.description?: "",
-                language = it.language ?: "",
-                fullName = it.fullName ?: "",
-                updatedAt = it.updatedAt ?: "",
-                createdAt = it.createdAt ?: "",
             )
             repos.add(repo)
         }

@@ -1,18 +1,15 @@
 package com.example.core.data.source.local.entity
 
 import android.os.Parcelable
-import androidx.annotation.NonNull
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.google.gson.annotations.SerializedName
-import kotlinx.android.parcel.Parcelize
+import kotlinx.parcelize.Parcelize
 
 @Parcelize
 @Entity(tableName = "github_user")
 data class GithubUserEntity (
     @PrimaryKey
-    @NonNull
     @ColumnInfo(name = "id")
     val id: Int,
 

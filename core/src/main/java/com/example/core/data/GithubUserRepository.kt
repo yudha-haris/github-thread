@@ -10,7 +10,6 @@ import com.example.core.data.source.remote.network.ApiResponse
 import com.example.core.domain.model.GithubUser
 import com.example.core.domain.model.GithubUserRepo
 import com.example.core.domain.repsoitory.IGithubUserRepository
-import com.example.core.utils.AppExecutors
 import com.example.core.utils.DataMapper
 import kotlinx.coroutines.flow.*
 import javax.inject.Inject
@@ -20,7 +19,6 @@ import javax.inject.Singleton
 class GithubUserRepository @Inject constructor(
     private val remoteDataSource: RemoteDataSource,
     private val localDataSource: LocalDataSource,
-    private val appExecutors: AppExecutors,
     private val githubUserPagingSource: GithubUserPagingSource
 ) : IGithubUserRepository {
     override fun getAllGithubUsers(): Flow<PagingData<GithubUser>> =
@@ -39,7 +37,7 @@ class GithubUserRepository @Inject constructor(
                 emit(Resource.Success(DataMapper.mapResponseToDomains(apiResponse.data)))
             }
             is ApiResponse.Empty -> {
-                emit(Resource.Error("empty respone"))
+                emit(Resource.Success(listOf()))
             }
             is ApiResponse.Error -> {
                 emit(Resource.Error(apiResponse.errorMessage))
@@ -68,7 +66,7 @@ class GithubUserRepository @Inject constructor(
                 emit(Resource.Success(DataMapper.mapResponseToDomain(apiResponse.data, isFavorite)))
             }
             is ApiResponse.Empty -> {
-                emit(Resource.Error("empty respone"))
+                emit(Resource.Error("empty response"))
             }
             is ApiResponse.Error -> {
                 emit(Resource.Error(apiResponse.errorMessage))
@@ -84,7 +82,7 @@ class GithubUserRepository @Inject constructor(
                 emit(Resource.Success(DataMapper.mapReposResponseToDomains(apiResponse.data)))
             }
             is ApiResponse.Empty -> {
-                emit(Resource.Error("empty respone"))
+                emit(Resource.Error("empty response"))
             }
             is ApiResponse.Error -> {
                 emit(Resource.Error(apiResponse.errorMessage))

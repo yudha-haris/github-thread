@@ -11,5 +11,5 @@ data class SearchGithubUserResponse(
 	val incompleteResults: Boolean? = null,
 
 	@field:SerializedName("items")
-	val items: List<GithubUserResponse> = listOf<GithubUserResponse>()
+	val items: List<GithubUserResponse> = listOf()
 )
