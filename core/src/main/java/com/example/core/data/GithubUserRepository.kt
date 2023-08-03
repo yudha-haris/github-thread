@@ -37,7 +37,7 @@ class GithubUserRepository @Inject constructor(
                 emit(Resource.Success(DataMapper.mapResponseToDomains(apiResponse.data)))
             }
             is ApiResponse.Empty -> {
-                emit(Resource.Error("empty response"))
+                emit(Resource.Success(listOf()))
             }
             is ApiResponse.Error -> {
                 emit(Resource.Error(apiResponse.errorMessage))

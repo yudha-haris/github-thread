@@ -18,6 +18,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.component.EmptyListPlaceholder
 import com.example.component.UserItemCard
 import com.example.core.domain.model.GithubUser
 import com.example.github_thread.R
@@ -81,18 +82,23 @@ fun FavoriteScreen(
             }
         ) { innerPadding ->
             users.value.let {
-                LazyColumn(
-                    modifier = Modifier.padding(innerPadding)
-                ) {
-                    item {
-                        Spacer(modifier = Modifier.height(16.dp))
-                    }
-                    items(it.size) { idx ->
-                        UserItemCard(it[idx], onTap = {username ->
-                            onItemTap(username)
-                        })
+                if(it.isEmpty()){
+                    EmptyListPlaceholder()
+                } else {
+                    LazyColumn(
+                        modifier = Modifier.padding(innerPadding)
+                    ) {
+                        item {
+                            Spacer(modifier = Modifier.height(16.dp))
+                        }
+                        items(it.size) { idx ->
+                            UserItemCard(it[idx], onTap = {username ->
+                                onItemTap(username)
+                            })
+                        }
                     }
                 }
+
             }
 
         }
